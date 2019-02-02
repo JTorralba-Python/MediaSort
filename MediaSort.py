@@ -49,7 +49,7 @@ class StopWatch(Frame):
         else:
             Console = Text(self, wrap=NONE, xscrollcommand=SBH.set, yscrollcommand=SBV.set)
         Console.pack(expand=TRUE, fill=BOTH)
-        Console.bind("<Configure>", lambda e: Console.configure(width=e.width-10))
+        Console.bind('<Configure>', lambda e: Console.configure(width=e.width-10))
         SBH.config(command=Console.xview)
         SBV.config(command=Console.yview)
 
@@ -86,22 +86,22 @@ class StopWatch(Frame):
             Line = Line.replace('\r', '')
             RowCol = Console.index('end-1c')
             LineNumber = RowCol[:-2]
-            Console.insert(END, '%s\n' % Line.encode("utf-8"))
+            Console.insert(END, '%s\n' % Line.encode('utf-8'))
             Console.see(END)
             Console.tag_add(LineNumber, RowCol, str(float(RowCol) + 0.4))
             if (Line[:3] == 'LOC'):
-                Console.tag_config(LineNumber, background="red", foreground="black")
+                Console.tag_config(LineNumber, background='red', foreground='black')
             else:
                 if Line[:3] == 'MED':
-                    Console.tag_config(LineNumber, background="blue", foreground="black")
+                    Console.tag_config(LineNumber, background='blue', foreground='black')
                 else:
                     if Line[:3] == 'FYI':
-                        Console.tag_config(LineNumber, background="green", foreground="black")
+                        Console.tag_config(LineNumber, background='green', foreground='black')
                     else:
                         if (Line[:3] == 'EXC'):
-                            Console.tag_config(LineNumber, background="yellow", foreground="black")
+                            Console.tag_config(LineNumber, background='yellow', foreground='black')
                         else:
-                            Console.tag_config(LineNumber, background="white", foreground="black")
+                            Console.tag_config(LineNumber, background='white', foreground='black')
             Console.pack()
             Console.update_idletasks()
         except:
@@ -171,7 +171,7 @@ def Sleep():
     time.sleep(0)
 
 def WhereAmI():
-    return os.path.dirname(os.path.realpath(__import__("__main__").__file__))
+    return os.path.dirname(os.path.realpath(__import__('__main__').__file__))
 
 def Get_Value (EXIF, Key):
     for (K, V) in EXIF.iteritems():
@@ -200,15 +200,18 @@ def MED(SW):
                                 SW.Queue_Add('FYI: DateTimeDigitized N/A')
                                 DateTimeOriginal = Get_Value(EXIF,'DateTime')
                                 if DateTimeOriginal == None:
-                                    FileName = File[:-4].upper().replace("-",":").replace(".",":")
+                                    FileName = File[:-4].upper().replace('-',':').replace('.',':')
                                     Length = len(FileName)
                                     Space = FileName[10:11]
                                     Colons = FileName.count(':')
-                                    if (Length == 19) and (Space == " ") and (Colons == 4):
+                                    if (Length == 19) and (Space == ' ') and (Colons == 4):
                                         DateTimeOriginal = FileName
                                     else:
                                         SW.Queue_Add('FYI: DateTime N/A')
                         SW.Queue_Add('MED: ' + DateTimeOriginal)
+
+#                        if DateTimeOriginal == '0000:00:00 00:00:00':
+#                            DateTimeOriginal = none
 
                         Date_YYYY = DateTimeOriginal[0:4]
                         Date_MM = DateTimeOriginal[5:7]
@@ -238,8 +241,8 @@ def LOC_Action(SW):
 
 def main():
     root = Tk()
-    root.title("MediaSort")
-    root.geometry("640x480")
+    root.title('MediaSort')
+    root.geometry('640x480')
     root.resizable(0,0)
 
     SW = StopWatch(root)
