@@ -210,8 +210,8 @@ def MED(SW):
                                         SW.Queue_Add('FYI: DateTime N/A')
                         SW.Queue_Add('MED: ' + DateTimeOriginal)
 
-#                        if DateTimeOriginal == '0000:00:00 00:00:00':
-#                            DateTimeOriginal = none
+                        if DateTimeOriginal == '0000:00:00 00:00:00':
+                            DateTimeOriginal = None
 
                         Date_YYYY = DateTimeOriginal[0:4]
                         Date_MM = DateTimeOriginal[5:7]
