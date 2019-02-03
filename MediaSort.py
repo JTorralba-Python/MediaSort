@@ -188,9 +188,11 @@ def MED(SW):
                 From = Current_Location + '/' + File
                 EXT = File[-3:].upper()
                 if EXT.upper() == 'JPG':
-                    SW.Queue_Add('FYI: ' + File)
+                    # SW.Queue_Add('FYI: ' + File)
                     try:
                         EXIF = Image.open(From)._getexif()
+
+                        DateTimeOriginal = None
 
                         DateTimeOriginal = Get_Value(EXIF,'DateTimeOriginal')
                         if DateTimeOriginal == None:
@@ -208,30 +210,56 @@ def MED(SW):
                                         DateTimeOriginal = FileName
                                     else:
                                         SW.Queue_Add('FYI: DateTime N/A')
-                        SW.Queue_Add('MED: ' + DateTimeOriginal)
 
                         if DateTimeOriginal == '0000:00:00 00:00:00':
                             DateTimeOriginal = None
 
-                        Date_YYYY = DateTimeOriginal[0:4]
-                        Date_MM = DateTimeOriginal[5:7]
-                        Date_DD = DateTimeOriginal[8:10]
-                        Time_HH = DateTimeOriginal[11:13]
-                        Time_MM = DateTimeOriginal[14:16]
-                        Time_SS = DateTimeOriginal[17:19]
+                        if DateTimeOriginal != None:
+                            SW.Queue_Add('MED: ' + DateTimeOriginal)
 
-                        New_Location = Current_Location + '/' + Date_YYYY + '/' + Date_MM + '/' + Date_DD + '/' + Time_HH + '00' + '/'
-                        New_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
-                        To = New_Location + New_File + '.' + EXT.lower()
+                            Date_YYYY = DateTimeOriginal[0:4]
+                            Date_MM = DateTimeOriginal[5:7]
+                            Date_DD = DateTimeOriginal[8:10]
+                            Time_HH = DateTimeOriginal[11:13]
+                            Time_MM = DateTimeOriginal[14:16]
+                            Time_SS = DateTimeOriginal[17:19]
 
-                        if not os.path.exists(New_Location):
-                            os.makedirs(New_Location, 0777);
-                        shutil.move(From, To)
-                        SW.Queue_Add('MED: ' + File + ' --> ' + To)
+                            New_Location = Current_Location + '/' + Date_YYYY + '/' + Date_MM + '/' + Date_DD + '/' + Time_HH + '00' + '/'
+                            New_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
+                            To = New_Location + New_File + '.' + EXT
+
+                            if not os.path.isfile(To):
+                                if not os.path.exists(New_Location):
+                                    os.makedirs(New_Location, 0777);
+                                shutil.move(From, To)
+                                SW.Queue_Add('MED: ' + File + ' --> ' + To)
+
                     except:
                         #print traceback.format_exc()
                         SW.Queue_Add('EXC: EXIF N/A')
                         pass
+
+                    if DateTimeOriginal == None:
+                        try:
+                            ImageFile = Image.open(From)
+                            Width, Height = ImageFile.size
+                            Dimension = str(Width) + ' x ' + str(Height)
+
+                            New_Location = Current_Location + '/Width x Height/' + Dimension + '/'
+                            New_File = File
+                            To = New_Location + New_File.upper()
+
+                            if not os.path.isfile(To):
+                                if not os.path.exists(New_Location):
+                                    os.makedirs(New_Location, 0777);
+                                shutil.move(From, To)
+                                SW.Queue_Add('MED: ' + File + ' --> ' + To)
+                        except:
+                            #print traceback.format_exc()
+                            SW.Queue_Add('EXC: Size N/A')
+                            pass
+
+
             Sleep()
     MED_Button.configure(state=NORMAL)
     SW.StartStop()
