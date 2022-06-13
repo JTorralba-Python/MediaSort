@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
-from Tkinter import *
+from tkinter import *
 import time
 import os
 import sys
-import thread
+import threading
 import traceback
-import Queue
+import queue
 import shutil
-import tkFileDialog
+import tkinter.filedialog
 
 from PIL import Image
 from PIL.ExifTags import TAGS
@@ -18,7 +18,7 @@ class StopWatch(Frame):
     def __init__(self, parent=None, **kw):
 
         Frame.__init__(self, parent, kw)
-        self.Queue = Queue.Queue()
+        self.Queue = queue.Queue()
         self.Running = 0
 
         self.Timer = StringVar()
@@ -83,29 +83,30 @@ class StopWatch(Frame):
 
     def Write(self, Line):
         try:
-            Line = Line.replace('\r', '')
+            Line = Line.replace('/', Slash)
             RowCol = Console.index('end-1c')
             LineNumber = RowCol[:-2]
-            Console.insert(END, '%s\n' % Line.encode('utf-8'))
+            Console.insert(END, Line.encode('utf-8'))
+            Console.insert(END, '\n')
             Console.see(END)
             Console.tag_add(LineNumber, RowCol, str(float(RowCol) + 0.4))
             if (Line[:3] == 'LOC'):
-                Console.tag_config(LineNumber, background='red', foreground='black')
+                Console.tag_config(LineNumber, background='gold', foreground='black')
             else:
                 if Line[:3] == 'MED':
-                    Console.tag_config(LineNumber, background='blue', foreground='black')
+                    Console.tag_config(LineNumber, background='darkseagreen', foreground='black')
                 else:
                     if Line[:3] == 'FYI':
-                        Console.tag_config(LineNumber, background='green', foreground='black')
+                        Console.tag_config(LineNumber, background='gold', foreground='black')
                     else:
                         if (Line[:3] == 'EXC'):
-                            Console.tag_config(LineNumber, background='yellow', foreground='black')
+                            Console.tag_config(LineNumber, background='indianred', foreground='black')
                         else:
                             Console.tag_config(LineNumber, background='white', foreground='black')
             Console.pack()
             Console.update_idletasks()
         except:
-            print traceback.format_exc()
+            print(traceback.format_exc())
             pass
 
     def Update(self):
@@ -136,7 +137,7 @@ class StopWatch(Frame):
         Options['initialdir'] = self.Location
         Options['filetypes'] = [('JPG Files','.jpg'),('JPG Files','.JPG'),('AVI Files','.avi'),('AVI Files','.AVI'),('MOV Files','.mov'),('MOV Files','.MOV'),('WAV Files','.wav'),('WAV Files','.WAV')]
         Options['title'] = 'Open Media File'
-        File = tkFileDialog.askopenfilename(**Options)
+        File = tkinter.filedialog.askopenfilename(**Options)
         if File:
             self.Location = os.path.split(File)[0]
             self.Queue_Add('LOC: ' + self.Location)
@@ -164,8 +165,10 @@ def Worker(SW, Thread):
     globals()[Button_X].configure(state=DISABLED)
 
     CMD = 'SW.' + Button_X + '_Root_LED()'
-    exec CMD
-    thread.start_new(globals()[Thread], (SW,))
+    exec(CMD)
+
+    X = threading.Thread(target = globals()[Thread], args=(SW,))
+    X.start()
 
 def Sleep():
     time.sleep(0)
@@ -173,11 +176,10 @@ def Sleep():
 def WhereAmI():
     return os.path.dirname(os.path.realpath(__import__('__main__').__file__))
 
-def Get_Value (EXIF, Key):
-    for (K, V) in EXIF.iteritems():
-        if TAGS.get(K) == Key:
-            # print K, V
-            return V
+def Get_Value(EXIF, Tag):
+  for (Key, Value) in EXIF.items():
+    if TAGS.get(Key) == Tag:
+      return Value
 
 def MED(SW):
     SW.StartStop()
@@ -185,15 +187,14 @@ def MED(SW):
     if Current_Location != 'CANCEL':
         for File in os.listdir(Current_Location):
             if os.path.isfile(os.path.join(Current_Location, File)):
-                From = Current_Location + '/' + File
+                From = Current_Location + Slash + File
                 EXT = File[-3:].upper()
                 if EXT.upper() == 'JPG':
-                    # SW.Queue_Add('FYI: ' + File)
+                    SW.Queue_Add('FYI: ' + File)
                     try:
                         EXIF = Image.open(From)._getexif()
 
                         DateTimeOriginal = None
-
                         DateTimeOriginal = Get_Value(EXIF,'DateTimeOriginal')
                         if DateTimeOriginal == None:
                             SW.Queue_Add('FYI: DateTimeOriginal N/A')
@@ -224,18 +225,18 @@ def MED(SW):
                             Time_MM = DateTimeOriginal[14:16]
                             Time_SS = DateTimeOriginal[17:19]
 
-                            New_Location = Current_Location + '/' + Date_YYYY + '/' + Date_MM + '/' + Date_DD + '/' + Time_HH + '00' + '/'
+                            New_Location = Current_Location + Slash + Date_YYYY + Slash + Date_MM + Slash + Date_DD + Slash + Time_HH + '00' + Slash
                             New_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
                             To = New_Location + New_File + '.' + EXT
 
                             if not os.path.isfile(To):
                                 if not os.path.exists(New_Location):
-                                    os.makedirs(New_Location, 0777);
+                                    os.makedirs(New_Location, 777);
                                 shutil.move(From, To)
                                 SW.Queue_Add('MED: ' + File + ' --> ' + To)
 
                     except:
-                        #print traceback.format_exc()
+                        #print(traceback.format_exc())
                         SW.Queue_Add('EXC: EXIF N/A')
                         pass
 
@@ -244,18 +245,17 @@ def MED(SW):
                             ImageFile = Image.open(From)
                             Width, Height = ImageFile.size
                             Dimension = str(Width) + ' x ' + str(Height)
-
-                            New_Location = Current_Location + '/Width x Height/' + Dimension + '/'
+                            New_Location = Current_Location + '/Width x Height/' + Dimension + Slash
                             New_File = File
                             To = New_Location + New_File.upper()
 
                             if not os.path.isfile(To):
                                 if not os.path.exists(New_Location):
-                                    os.makedirs(New_Location, 0777);
+                                    os.makedirs(New_Location, 777);
                                 shutil.move(From, To)
                                 SW.Queue_Add('MED: ' + File + ' --> ' + To)
                         except:
-                            #print traceback.format_exc()
+                            #print(traceback.format_exc())
                             SW.Queue_Add('EXC: Size N/A')
                             pass
 
@@ -272,6 +272,12 @@ def main():
     root.title('MediaSort')
     root.geometry('640x480')
     root.resizable(0,0)
+
+    global Slash
+    if os.name == 'nt':
+        Slash = '\\'
+    else:
+        Slash = '/'
 
     SW = StopWatch(root)
     SW.pack(side=TOP, expand=TRUE, fill=BOTH)
