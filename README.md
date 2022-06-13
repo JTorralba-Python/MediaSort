@@ -5,10 +5,9 @@ Media Sort analyzes photo file EXIF metadata. It creates a multi-level tree stru
 
 ## Stack:
 
-Red Hat Enterprise Linux Server release 7.6 (Maipo)\
-Python 2.7.5\
-TKinter 2.7.5\
-python-imaging (python-pillow-2.0.0.0-19)
+Microsoft Windows 11 Enterprise\
+Python 3.10.5\
+Pillow 9.1.1
 
 ## Usage:
 
