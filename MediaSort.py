@@ -9,6 +9,9 @@ import traceback
 import queue
 import shutil
 import tkinter.filedialog
+import filecmp
+import pathlib
+import datetime
 
 from PIL import Image
 from PIL.ExifTags import TAGS
@@ -181,6 +184,15 @@ def Get_Value(EXIF, Tag):
     if TAGS.get(Key) == Tag:
       return Value
 
+def FileCreated(File):
+  CTime = datetime.datetime.fromtimestamp(pathlib.Path(File).stat().st_ctime)
+  MTime = datetime.datetime.fromtimestamp(pathlib.Path(File).stat().st_mtime)
+  if CTime <= MTime:
+    Time = CTime
+  else:
+    Time = MTime
+  return Time.strftime('%Y:%m:%d %H:%M:%S')
+
 def MED(SW):
     SW.StartStop()
     Current_Location = SW.Location
@@ -190,7 +202,7 @@ def MED(SW):
                 From = Current_Location + Slash + File
                 EXT = File[-3:].upper()
                 if EXT.upper() == 'JPG':
-                    SW.Queue_Add('FYI: ' + File)
+                    SW.Queue_Add('MED: ' + File)
                     try:
                         EXIF = Image.open(From)._getexif()
 
@@ -216,8 +228,6 @@ def MED(SW):
                             DateTimeOriginal = None
 
                         if DateTimeOriginal != None:
-                            SW.Queue_Add('MED: ' + DateTimeOriginal)
-
                             Date_YYYY = DateTimeOriginal[0:4]
                             Date_MM = DateTimeOriginal[5:7]
                             Date_DD = DateTimeOriginal[8:10]
@@ -244,10 +254,20 @@ def MED(SW):
                         try:
                             ImageFile = Image.open(From)
                             Width, Height = ImageFile.size
+                            ImageFile.close()
                             Dimension = str(Width) + ' x ' + str(Height)
-                            New_Location = Current_Location + '/Width x Height/' + Dimension + Slash
-                            New_File = File
-                            To = New_Location + New_File.upper()
+
+                            DateTimeOriginal = FileCreated(From)
+                            Date_YYYY = DateTimeOriginal[0:4]
+                            Date_MM = DateTimeOriginal[5:7]
+                            Date_DD = DateTimeOriginal[8:10]
+                            Time_HH = DateTimeOriginal[11:13]
+                            Time_MM = DateTimeOriginal[14:16]
+                            Time_SS = DateTimeOriginal[17:19]
+
+                            New_Location = Current_Location + '/Width x Height/' + Dimension + Slash + Date_YYYY + Slash + Date_MM + Slash + Date_DD + Slash + Time_HH + '00' + Slash
+                            New_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
+                            To = New_Location + New_File.upper() + '.' + EXT
 
                             if not os.path.isfile(To):
                                 if not os.path.exists(New_Location):
@@ -256,7 +276,6 @@ def MED(SW):
                                 SW.Queue_Add('MED: ' + File + ' --> ' + To)
                         except:
                             #print(traceback.format_exc())
-                            SW.Queue_Add('EXC: Size N/A')
                             pass
 
 
