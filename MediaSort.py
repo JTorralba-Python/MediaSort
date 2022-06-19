@@ -138,7 +138,7 @@ class StopWatch(Frame):
     def GetLocation(self):
         Options = {}
         Options['initialdir'] = self.Location
-        Options['filetypes'] = [('JPG Files','.jpg'),('JPG Files','.JPG'),('PNG Files','.png'),('PNG Files','.PNG'),('AVI Files','.avi'),('AVI Files','.AVI'),('MOV Files','.mov'),('MOV Files','.MOV'),('MTS Files','.mts'),('MTS Files','.MTS'),('WAV Files','.wav'),('WAV Files','.WAV')]
+        Options['filetypes'] = [('JPG Files','.jpg'),('JPG Files','.JPG'),('PNG Files','.png'),('PNG Files','.PNG'),('AVI Files','.avi'),('AVI Files','.AVI'),('MOV Files','.mov'),('MOV Files','.MOV'),('MP4 Files','.mp4'),('MP4 Files','.MP4'),('MTS Files','.mts'),('MTS Files','.MTS'),('WAV Files','.wav'),('WAV Files','.WAV')]
         Options['title'] = 'Open Media File'
         File = tkinter.filedialog.askopenfilename(**Options)
         if File:
@@ -231,8 +231,8 @@ def MED(SW):
             if os.path.isfile(os.path.join(Path, File)):
                 From = Path + Slash + File
                 EXT = File[-3:].upper()
-                if EXT.upper() in ('JPG','PNG','AVI','MOV','MTS','WAV'):
-                    SW.Queue_Add('MED: ' + File)
+                if EXT.upper() in ('JPG','PNG','AVI','MOV','MP4','MTS','WAV'):
+                    #SW.Queue_Add('MED: ' + File)
                     try:
                         DateTimeOriginal = EXIFTool(From)
                         #EXIF = Image.open(From)._getexif()
@@ -277,11 +277,11 @@ def MED(SW):
 
                     except:
                         #print(traceback.format_exc())
-                        SW.Queue_Add('EXC: EXIF N/A')
+                        SW.Queue_Add('EXC: EXIF N/A (' + File + ')')
                         pass
 
                     if DateTimeOriginal == None:
-                        SW.Queue_Add('FYI: DateTimeOriginal N/A')
+                        SW.Queue_Add('FYI: DateTimeOriginal N/A (' + File + ')')
                         try:
                             ImageFile = Image.open(From)
                             Width, Height = ImageFile.size
