@@ -226,9 +226,10 @@ def MED(SW):
     SW.StartStop()
     Current_Location = SW.Location
     if Current_Location != 'CANCEL':
-        for File in os.listdir(Current_Location):
-            if os.path.isfile(os.path.join(Current_Location, File)):
-                From = Current_Location + Slash + File
+      for Path, Folders, Files in os.walk(Current_Location):
+        for File in Files:
+            if os.path.isfile(os.path.join(Path, File)):
+                From = Path + Slash + File
                 EXT = File[-3:].upper()
                 if EXT.upper() in ('JPG','PNG','AVI','MOV','MTS','WAV'):
                     SW.Queue_Add('MED: ' + File)
@@ -264,7 +265,7 @@ def MED(SW):
                             Time_MM = DateTimeOriginal[14:16]
                             Time_SS = DateTimeOriginal[17:19]
 
-                            New_Location = Current_Location + Slash + EXT + Slash + Date_YYYY + Slash + Date_MM + Slash + Date_DD + Slash + Time_HH + '00' + Slash
+                            New_Location = Current_Location + Slash + '..' + Slash + EXT + Slash + Date_YYYY + Slash + Date_MM + Slash + Date_DD + Slash + Time_HH + '00' + Slash
                             New_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
                             To = New_Location + New_File + '.' + EXT
 
@@ -295,7 +296,7 @@ def MED(SW):
                             Time_MM = DateTimeOriginal[14:16]
                             Time_SS = DateTimeOriginal[17:19]
 
-                            New_Location = Current_Location + Slash + EXT + '/Width x Height/' + Dimension + Slash + Date_YYYY + Slash + Date_MM + Slash + Date_DD + Slash + Time_HH + '00' + Slash
+                            New_Location = Current_Location + Slash + '..' + Slash + EXT + '/Width x Height/' + Dimension + Slash + Date_YYYY + Slash + Date_MM + Slash + Date_DD + Slash + Time_HH + '00' + Slash
                             New_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
                             To = New_Location + New_File.upper() + '.' + EXT
 
