@@ -138,7 +138,7 @@ class StopWatch(Frame):
     def GetLocation(self):
         Options = {}
         Options['initialdir'] = self.Location
-        Options['filetypes'] = [('JPG Files','.jpg'),('JPG Files','.JPG'),('AVI Files','.avi'),('AVI Files','.AVI'),('MOV Files','.mov'),('MOV Files','.MOV'),('WAV Files','.wav'),('WAV Files','.WAV')]
+        Options['filetypes'] = [('JPG Files','.jpg'),('JPG Files','.JPG'),('PNG Files','.png'),('PNG Files','.PNG'),('AVI Files','.avi'),('AVI Files','.AVI'),('MOV Files','.mov'),('MOV Files','.MOV'),('MTS Files','.mts'),('MTS Files','.MTS'),('WAV Files','.wav'),('WAV Files','.WAV')]
         Options['title'] = 'Open Media File'
         File = tkinter.filedialog.askopenfilename(**Options)
         if File:
@@ -193,6 +193,35 @@ def FileCreated(File):
     Time = MTime
   return Time.strftime('%Y:%m:%d %H:%M:%S')
 
+def Extension(File):
+  Input = os.path.splitext(File)
+  Root = Input[0]
+  Extension = Input[1]
+  Extension = Extension.replace('.', '').upper()
+  #print(Extension)
+  return Extension
+
+def EXIFTool(File):
+  try:
+    Oldest = '0000:00:00 00:00:00'
+    Newest = '0000:00:00 00:00:00'
+    CMD = 'EXIFTool\\EXIFTool -q -q -p EXIFTool\\' + Extension(File) + '.fmt ' + File
+    #EXIFTool\EXIFTool -list
+    #EXIFTool\EXIFTool -s -s -s -"*date*" Sample\Sample.jpg
+    #EXIFTool\EXIFTool -q -q -p Format.fmt Sample\Sample.jpg
+    #Output = os.popen('EXIFTool\\EXIFTool -q -q -p EXIFTool\\JPG.fmt ' + File).read()
+    Data = os.popen(CMD).read()
+    EXIF = eval(Data)
+    ASC = tuple(sorted(EXIF))
+    DSC = tuple(sorted(EXIF, reverse = True))
+    Oldest = ASC[0]
+    Newest = DSC[0]
+    #print('Oldest = ' + Oldest)
+    #print('Newest = ' + Newest)
+    return Oldest[:19]
+  except:
+    return None
+
 def MED(SW):
     SW.StartStop()
     Current_Location = SW.Location
@@ -201,28 +230,28 @@ def MED(SW):
             if os.path.isfile(os.path.join(Current_Location, File)):
                 From = Current_Location + Slash + File
                 EXT = File[-3:].upper()
-                if EXT.upper() == 'JPG':
+                if EXT.upper() in ('JPG','PNG','AVI','MOV','MTS','WAV'):
                     SW.Queue_Add('MED: ' + File)
                     try:
-                        EXIF = Image.open(From)._getexif()
-
-                        DateTimeOriginal = None
-                        DateTimeOriginal = Get_Value(EXIF,'DateTimeOriginal')
-                        if DateTimeOriginal == None:
-                            SW.Queue_Add('FYI: DateTimeOriginal N/A')
-                            DateTimeOriginal = Get_Value(EXIF,'DateTimeDigitized')
-                            if DateTimeOriginal == None:
-                                SW.Queue_Add('FYI: DateTimeDigitized N/A')
-                                DateTimeOriginal = Get_Value(EXIF,'DateTime')
-                                if DateTimeOriginal == None:
-                                    FileName = File[:-4].upper().replace('-',':').replace('.',':')
-                                    Length = len(FileName)
-                                    Space = FileName[10:11]
-                                    Colons = FileName.count(':')
-                                    if (Length == 19) and (Space == ' ') and (Colons == 4):
-                                        DateTimeOriginal = FileName
-                                    else:
-                                        SW.Queue_Add('FYI: DateTime N/A')
+                        DateTimeOriginal = EXIFTool(From)
+                        #EXIF = Image.open(From)._getexif()
+                        #DateTimeOriginal = None
+                        #DateTimeOriginal = Get_Value(EXIF,'DateTimeOriginal')
+                        #if DateTimeOriginal == None:
+                        #    SW.Queue_Add('FYI: DateTimeOriginal N/A')
+                        #    DateTimeOriginal = Get_Value(EXIF,'DateTimeDigitized')
+                        #    if DateTimeOriginal == None:
+                        #        SW.Queue_Add('FYI: DateTimeDigitized N/A')
+                        #        DateTimeOriginal = Get_Value(EXIF,'DateTime')
+                        #        if DateTimeOriginal == None:
+                        #            FileName = File[:-4].upper().replace('-',':').replace('.',':')
+                        #            Length = len(FileName)
+                        #            Space = FileName[10:11]
+                        #            Colons = FileName.count(':')
+                        #            if (Length == 19) and (Space == ' ') and (Colons == 4):
+                        #                DateTimeOriginal = FileName
+                        #            else:
+                        #                SW.Queue_Add('FYI: DateTime N/A')
 
                         if DateTimeOriginal == '0000:00:00 00:00:00':
                             DateTimeOriginal = None
@@ -235,7 +264,7 @@ def MED(SW):
                             Time_MM = DateTimeOriginal[14:16]
                             Time_SS = DateTimeOriginal[17:19]
 
-                            New_Location = Current_Location + Slash + Date_YYYY + Slash + Date_MM + Slash + Date_DD + Slash + Time_HH + '00' + Slash
+                            New_Location = Current_Location + Slash + EXT + Slash + Date_YYYY + Slash + Date_MM + Slash + Date_DD + Slash + Time_HH + '00' + Slash
                             New_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
                             To = New_Location + New_File + '.' + EXT
 
@@ -251,6 +280,7 @@ def MED(SW):
                         pass
 
                     if DateTimeOriginal == None:
+                        SW.Queue_Add('FYI: DateTimeOriginal N/A')
                         try:
                             ImageFile = Image.open(From)
                             Width, Height = ImageFile.size
@@ -265,7 +295,7 @@ def MED(SW):
                             Time_MM = DateTimeOriginal[14:16]
                             Time_SS = DateTimeOriginal[17:19]
 
-                            New_Location = Current_Location + '/Width x Height/' + Dimension + Slash + Date_YYYY + Slash + Date_MM + Slash + Date_DD + Slash + Time_HH + '00' + Slash
+                            New_Location = Current_Location + Slash + EXT + '/Width x Height/' + Dimension + Slash + Date_YYYY + Slash + Date_MM + Slash + Date_DD + Slash + Time_HH + '00' + Slash
                             New_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
                             To = New_Location + New_File.upper() + '.' + EXT
 
