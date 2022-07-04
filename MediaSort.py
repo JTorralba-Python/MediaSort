@@ -9,12 +9,6 @@ import traceback
 import queue
 import shutil
 import tkinter.filedialog
-import filecmp
-import pathlib
-import datetime
-
-from PIL import Image
-from PIL.ExifTags import TAGS
 
 class StopWatch(Frame):
 
@@ -105,7 +99,10 @@ class StopWatch(Frame):
                         if (Line[:3] == 'EXC'):
                             Console.tag_config(LineNumber, background='indianred', foreground='black')
                         else:
-                            Console.tag_config(LineNumber, background='white', foreground='black')
+                            if (Line[:3] == 'STS'):
+                                Console.tag_config(LineNumber, background='violet', foreground='black')
+                            else:
+                                Console.tag_config(LineNumber, background='white', foreground='black')
             Console.pack()
             Console.update_idletasks()
         except:
@@ -179,138 +176,98 @@ def Sleep():
 def WhereAmI():
     return os.path.dirname(os.path.realpath(__import__('__main__').__file__))
 
-def Get_Value(EXIF, Tag):
-  for (Key, Value) in EXIF.items():
-    if TAGS.get(Key) == Tag:
-      return Value
-
-def FileCreated(File):
-  CTime = datetime.datetime.fromtimestamp(pathlib.Path(File).stat().st_ctime)
-  MTime = datetime.datetime.fromtimestamp(pathlib.Path(File).stat().st_mtime)
-  if CTime <= MTime:
-    Time = CTime
-  else:
-    Time = MTime
-  return Time.strftime('%Y:%m:%d %H:%M:%S')
-
 def Extension(File):
-  Input = os.path.splitext(File)
-  Root = Input[0]
-  Extension = Input[1]
-  Extension = Extension.replace('.', '').upper()
-  #print(Extension)
-  return Extension
+    Input = os.path.splitext(File)
+    Root = Input[0]
+    Extension = Input[1]
+    Extension = Extension.replace('.', '').upper()
+    return Extension
 
 def EXIFTool(File):
-  try:
-    Oldest = '0000:00:00 00:00:00'
-    Newest = '0000:00:00 00:00:00'
-    CMD = 'EXIFTool\\EXIFTool -q -q -p EXIFTool\\' + Extension(File) + '.fmt ' + File
-    #EXIFTool\EXIFTool -list
-    #EXIFTool\EXIFTool -s -s -s -"*date*" Sample\Sample.jpg
-    #EXIFTool\EXIFTool -q -q -p Format.fmt Sample\Sample.jpg
-    #Output = os.popen('EXIFTool\\EXIFTool -q -q -p EXIFTool\\JPG.fmt ' + File).read()
-    Data = os.popen(CMD).read()
-    EXIF = eval(Data)
-    ASC = tuple(sorted(EXIF))
-    DSC = tuple(sorted(EXIF, reverse = True))
-    Oldest = ASC[0]
-    Newest = DSC[0]
-    #print('Oldest = ' + Oldest)
-    #print('Newest = ' + Newest)
-    return Oldest[:19]
-  except:
-    return None
+    try:
+        Oldest = None
+        Newest = None
+
+        CMD = 'EXIFTool\\EXIFTool -q -q -p EXIFTool\\' + Extension(File) + '.fmt ' + File
+        #EXIFTool\EXIFTool -list
+        #EXIFTool\EXIFTool -s -s -s -"*date*" Sample\Sample.jpg
+        #EXIFTool\EXIFTool -q -q -p Format.fmt Sample\Sample.jpg
+
+        #Output = os.popen('EXIFTool\\EXIFTool -q -q -p EXIFTool\\JPG.fmt ' + File).read()
+        Data = os.popen(CMD).read()
+
+        EXIF = eval(Data)
+        ASC = tuple(sorted(EXIF))
+        DSC = tuple(sorted(EXIF, reverse = True))
+
+        X = len(ASC)
+        I = 0
+        while I < X:
+            Oldest = ASC[I]
+            if Oldest == '0000:00:00 00:00:00':
+                I += 1
+            else:
+                I = X
+
+        X = len(DSC)
+        I = 0
+        while I < X:
+            Newest = ASC[I]
+            if Newest == '0000:00:00 00:00:00':
+                I += 1
+            else:
+                I = X
+
+        return Oldest[:19]
+
+    except:
+        print('EXIFTool(File): ' + traceback.format_exc())
+        return None
 
 def MED(SW):
     SW.StartStop()
+
     Current_Location = SW.Location
+
     if Current_Location != 'CANCEL':
-      for Path, Folders, Files in os.walk(Current_Location):
-        for File in Files:
-            if os.path.isfile(os.path.join(Path, File)):
-                From = Path + Slash + File
-                EXT = File[-3:].upper()
-                if EXT.upper() in ('JPG','PNG','AVI','MOV','MP4','MTS','WAV'):
-                    #SW.Queue_Add('MED: ' + File)
-                    try:
-                        DateTimeOriginal = EXIFTool(From)
-                        #EXIF = Image.open(From)._getexif()
-                        #DateTimeOriginal = None
-                        #DateTimeOriginal = Get_Value(EXIF,'DateTimeOriginal')
-                        #if DateTimeOriginal == None:
-                        #    SW.Queue_Add('FYI: DateTimeOriginal N/A')
-                        #    DateTimeOriginal = Get_Value(EXIF,'DateTimeDigitized')
-                        #    if DateTimeOriginal == None:
-                        #        SW.Queue_Add('FYI: DateTimeDigitized N/A')
-                        #        DateTimeOriginal = Get_Value(EXIF,'DateTime')
-                        #        if DateTimeOriginal == None:
-                        #            FileName = File[:-4].upper().replace('-',':').replace('.',':')
-                        #            Length = len(FileName)
-                        #            Space = FileName[10:11]
-                        #            Colons = FileName.count(':')
-                        #            if (Length == 19) and (Space == ' ') and (Colons == 4):
-                        #                DateTimeOriginal = FileName
-                        #            else:
-                        #                SW.Queue_Add('FYI: DateTime N/A')
 
-                        if DateTimeOriginal == '0000:00:00 00:00:00':
-                            DateTimeOriginal = None
+        for Path, Folders, Files in os.walk(Current_Location):
 
-                        if DateTimeOriginal != None:
-                            Date_YYYY = DateTimeOriginal[0:4]
-                            Date_MM = DateTimeOriginal[5:7]
-                            Date_DD = DateTimeOriginal[8:10]
-                            Time_HH = DateTimeOriginal[11:13]
-                            Time_MM = DateTimeOriginal[14:16]
-                            Time_SS = DateTimeOriginal[17:19]
+            for File in Files:
 
-                            New_Location = Current_Location + Slash + '..' + Slash + EXT + Slash + Date_YYYY + Slash + Date_MM + Slash + Date_DD + Slash + Time_HH + '00' + Slash
-                            New_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
-                            To = New_Location + New_File + '.' + EXT
+                if os.path.isfile(os.path.join(Path, File)):
+                    From = Path + Slash + File
+                    EXT = File[-3:].upper()
 
-                            if not os.path.isfile(To):
-                                if not os.path.exists(New_Location):
-                                    os.makedirs(New_Location, 777);
-                                shutil.move(From, To)
-                                SW.Queue_Add('MED: ' + File + ' --> ' + To)
-
-                    except:
-                        #print(traceback.format_exc())
-                        SW.Queue_Add('EXC: EXIF N/A (' + File + ')')
-                        pass
-
-                    if DateTimeOriginal == None:
-                        SW.Queue_Add('FYI: DateTimeOriginal N/A (' + File + ')')
+                    if EXT.upper() in ('JPG','PNG','AVI','MOV','MP4','MTS','WAV'):
                         try:
-                            ImageFile = Image.open(From)
-                            Width, Height = ImageFile.size
-                            ImageFile.close()
-                            Dimension = str(Width) + ' x ' + str(Height)
+                            DateTimeOriginal = EXIFTool(From)
+                            if DateTimeOriginal != None:
+                                Date_YYYY = DateTimeOriginal[0:4]
+                                Date_MM = DateTimeOriginal[5:7]
+                                Date_DD = DateTimeOriginal[8:10]
+                                Time_HH = DateTimeOriginal[11:13]
+                                Time_MM = DateTimeOriginal[14:16]
+                                Time_SS = DateTimeOriginal[17:19]
 
-                            DateTimeOriginal = FileCreated(From)
-                            Date_YYYY = DateTimeOriginal[0:4]
-                            Date_MM = DateTimeOriginal[5:7]
-                            Date_DD = DateTimeOriginal[8:10]
-                            Time_HH = DateTimeOriginal[11:13]
-                            Time_MM = DateTimeOriginal[14:16]
-                            Time_SS = DateTimeOriginal[17:19]
+                                New_Location = Current_Location + Slash + '..' + Slash + EXT + Slash + Date_YYYY + Slash + Date_MM + Slash + Date_DD + Slash + Time_HH + '00' + Slash
+                                New_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
+                                To = New_Location + New_File + '.' + EXT
 
-                            New_Location = Current_Location + Slash + '..' + Slash + EXT + '/Width x Height/' + Dimension + Slash + Date_YYYY + Slash + Date_MM + Slash + Date_DD + Slash + Time_HH + '00' + Slash
-                            New_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
-                            To = New_Location + New_File.upper() + '.' + EXT
-
-                            if not os.path.isfile(To):
-                                if not os.path.exists(New_Location):
-                                    os.makedirs(New_Location, 777);
-                                shutil.move(From, To)
-                                SW.Queue_Add('MED: ' + File + ' --> ' + To)
+                                if not os.path.isfile(To):
+                                    if not os.path.exists(New_Location):
+                                        os.makedirs(New_Location, 777);
+                                    shutil.move(From, To)
+                                    SW.Queue_Add('MED: ' + File + ' --> ' + To)
+                                else:
+                                    SW.Queue_Add('STS: ' + File + ' --> Target file already exists.')
+                            else:
+                                SW.Queue_Add('FYI: ' + File + ' --> Unable to process.')
                         except:
-                            #print(traceback.format_exc())
+                            print('MED(SW): ' + traceback.format_exc())
                             pass
+                Sleep()
 
-
-            Sleep()
     MED_Button.configure(state=NORMAL)
     SW.StartStop()
 

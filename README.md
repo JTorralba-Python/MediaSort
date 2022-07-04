@@ -7,7 +7,6 @@ Media Sort analyzes photo file EXIF metadata. It creates a multi-level tree stru
 
 Microsoft Windows 11 Enterprise\
 Python 3.10.5\
-Pillow 9.1.1
 
 ## Usage:
 
