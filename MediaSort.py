@@ -231,9 +231,9 @@ def MED(SW):
 
     if Current_Location != 'CANCEL':
 
-        for Path, Folders, Files in os.walk(Current_Location):
+        for Path, Folders, Files in os.walk(Current_Location, topdown=False):
 
-            for File in Files:
+            for File in sorted(Files, reverse=True):
 
                 if os.path.isfile(os.path.join(Path, File)):
                     From = Path + Slash + File
@@ -250,23 +250,35 @@ def MED(SW):
                                 Time_MM = DateTimeOriginal[14:16]
                                 Time_SS = DateTimeOriginal[17:19]
 
-                                New_Location = Current_Location + Slash + '..' + Slash + EXT + Slash + Date_YYYY + Slash + Date_MM + Slash + Date_DD + Slash + Time_HH + '00' + Slash
+                                New_Location = Current_Location + Slash + '..' + Slash + EXT + Slash
+                                if not os.path.exists(New_Location):
+                                    os.makedirs(New_Location, 777);
+
                                 New_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
                                 To = New_Location + New_File + '.' + EXT
 
-                                if not os.path.isfile(To):
-                                    if not os.path.exists(New_Location):
-                                        os.makedirs(New_Location, 777);
-                                    shutil.move(From, To)
-                                    SW.Queue_Add('MED: ' + File + ' --> ' + To)
-                                else:
-                                    SW.Queue_Add('STS: ' + File + ' --> Target file already exists.')
+                                I = 0;
+                                while os.path.isfile(To):
+                                    I += 1
+                                    New_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS + '_' + str(I).zfill(6)
+                                    To = New_Location + New_File + '.' + EXT
+
+                                shutil.move(From, To)
+                                SW.Queue_Add('MED: ' + File + ' --> ' + To)
+
                             else:
-                                SW.Queue_Add('FYI: ' + File + ' --> Unable to process.')
+                                SW.Queue_Add('STS: ' + File + ' --> Unable to process.')
                         except:
                             print('MED(SW): ' + traceback.format_exc())
                             pass
+
+                if len(os.listdir(Path) ) == 0:
+                    os.rmdir(Path)
+                    
                 Sleep()
+
+
+            
 
     MED_Button.configure(state=NORMAL)
     SW.StartStop()
