@@ -8,35 +8,6 @@ import datetime
 from PIL import Image
 from PIL.ExifTags import TAGS
 
-def Extension(File):
-  Input = os.path.splitext(File)
-  Root = Input[0]
-  Extension = Input[1]
-  Extension = Extension.replace('.', '').upper()
-  #print(Extension)
-  return Extension
-
-def EXIFTool(File):
-  try:
-    Oldest = '0000:00:00 00:00:00'
-    Newest = '0000:00:00 00:00:00'
-    CMD = 'EXIFTool\\EXIFTool -q -q -p EXIFTool\\' + Extension(File) + '.fmt ' + '"' + File + '"'
-    #EXIFTool\EXIFTool -list
-    #EXIFTool\EXIFTool -s -s -s -"*date*" Sample\Sample.jpg
-    #EXIFTool\EXIFTool -q -q -p Format.fmt Sample\Sample.jpg
-    #Output = os.popen('EXIFTool\\EXIFTool -q -q -p EXIFTool\\JPG.fmt ' + File).read()
-    Data = os.popen(CMD).read()
-    EXIF = eval(Data)
-    ASC = tuple(sorted(EXIF))
-    DSC = tuple(sorted(EXIF, reverse = True))
-    Oldest = ASC[0]
-    Newest = DSC[0]
-    #print('Oldest = ' + Oldest)
-    #print('Newest = ' + Newest)
-    return Oldest[:19]
-  except:
-    return None
-
 def Pillow_All(File):
   try:
     EXIF = Image.open(File)._getexif()
@@ -82,11 +53,6 @@ def System(File):
 try:
 
   File = sys.argv[1]
-
-  print('________________________________________________________________________EXIFTool')
-  print()
-  print(EXIFTool(File))
-  print()
 
   print('__________________________________________________________________________Pillow')
   print()

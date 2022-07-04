@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 from tkinter import *
+from EXIFTool import *
+
 import time
 import os
 import sys
@@ -176,54 +178,6 @@ def Sleep():
 def WhereAmI():
     return os.path.dirname(os.path.realpath(__import__('__main__').__file__))
 
-def Extension(File):
-    Input = os.path.splitext(File)
-    Root = Input[0]
-    Extension = Input[1]
-    Extension = Extension.replace('.', '').upper()
-    return Extension
-
-def EXIFTool(File):
-    try:
-        Oldest = None
-        Newest = None
-
-        CMD = 'EXIFTool\\EXIFTool -q -q -p EXIFTool\\' + Extension(File) + '.fmt ' + '"' + File + '"'
-        #EXIFTool\EXIFTool -list
-        #EXIFTool\EXIFTool -s -s -s -"*date*" Sample\Sample.jpg
-        #EXIFTool\EXIFTool -q -q -p Format.fmt Sample\Sample.jpg
-
-        #Output = os.popen('EXIFTool\\EXIFTool -q -q -p EXIFTool\\JPG.fmt ' + File).read()
-        Data = os.popen(CMD).read()
-
-        EXIF = eval(Data)
-        ASC = tuple(sorted(EXIF))
-        DSC = tuple(sorted(EXIF, reverse = True))
-
-        X = len(ASC)
-        I = 0
-        while I < X:
-            Oldest = ASC[I]
-            if Oldest == '0000:00:00 00:00:00':
-                I += 1
-            else:
-                I = X
-
-        X = len(DSC)
-        I = 0
-        while I < X:
-            Newest = ASC[I]
-            if Newest == '0000:00:00 00:00:00':
-                I += 1
-            else:
-                I = X
-
-        return Oldest[:19]
-
-    except:
-        print('EXIFTool(File): ' + traceback.format_exc())
-        return None
-
 def MED(SW):
     SW.StartStop()
 
@@ -250,7 +204,7 @@ def MED(SW):
                                 Time_MM = DateTimeOriginal[14:16]
                                 Time_SS = DateTimeOriginal[17:19]
 
-                                New_Location = Current_Location + Slash + '..' + Slash + EXT + Slash
+                                New_Location = Current_Location + Slash + '..' + Slash + EXT + Slash + Dimension(From) + Slash
                                 if not os.path.exists(New_Location):
                                     os.makedirs(New_Location, 777);
 
