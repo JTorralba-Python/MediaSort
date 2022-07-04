@@ -272,13 +272,13 @@ def MED(SW):
                             print('MED(SW): ' + traceback.format_exc())
                             pass
 
-                if len(os.listdir(Path) ) == 0:
-                    os.rmdir(Path)
-                    
                 Sleep()
 
-
-            
+            try:
+                if len(os.listdir(Path)) == 0:
+                    os.rmdir(Path)
+            except:
+                pass
 
     MED_Button.configure(state=NORMAL)
     SW.StartStop()
