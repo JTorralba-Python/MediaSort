@@ -188,7 +188,7 @@ def EXIFTool(File):
         Oldest = None
         Newest = None
 
-        CMD = 'EXIFTool\\EXIFTool -q -q -p EXIFTool\\' + Extension(File) + '.fmt ' + File
+        CMD = 'EXIFTool\\EXIFTool -q -q -p EXIFTool\\' + Extension(File) + '.fmt ' + '"' + File + '"'
         #EXIFTool\EXIFTool -list
         #EXIFTool\EXIFTool -s -s -s -"*date*" Sample\Sample.jpg
         #EXIFTool\EXIFTool -q -q -p Format.fmt Sample\Sample.jpg
