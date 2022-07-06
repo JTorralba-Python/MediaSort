@@ -5,10 +5,14 @@ import os
 import pathlib
 import datetime
 
-def Extension(File):
-    Input = os.path.splitext(File)
-    Root = Input[0]
-    Extension = Input[1].upper()
+def File_Base(File):
+    File = os.path.splitext(File)
+    Base = File[0]
+    return Base
+
+def File_Extension(File):
+    File = os.path.splitext(File)
+    Extension = File[1].replace('.','').upper()
     return Extension
 
 def EXIFTool(File):
@@ -16,7 +20,7 @@ def EXIFTool(File):
         Oldest = None
         Newest = None
 
-        CMD = 'EXIFTool\\EXIFTool -q -q -p EXIFTool\\' + Extension(File) + '.fmt ' + '"' + File + '"'
+        CMD = 'EXIFTool\\EXIFTool -q -q -p EXIFTool\\' + File_Extension(File) + '.fmt ' + '"' + File + '"'
         #EXIFTool\EXIFTool -list
         #EXIFTool\EXIFTool -s -s -s -"datetimeoriginal" "Sample\Sample.jpg"
         #EXIFTool\EXIFTool -s -s -s -"*date*" "Sample\Sample.jpg"
