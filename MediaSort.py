@@ -191,8 +191,14 @@ def MED(SW):
 
                 if os.path.isfile(os.path.join(Path, File)):
                     From = Path + Slash + File
-                    BASE = File[0:-4]
-                    EXT = File[-3:].lower()
+
+                    # BASE = File[0:-4]
+                    # EXT = File[-3:].lower()
+
+                    split_tup = os.path.splitext(File)
+                    BASE = split_tup[0]
+                    EXT = split_tup[1]
+
                     New_Location = Current_Location + Slash + '..' + Slash + EXT.upper() + Slash
  
                     if EXT.upper() in ('JPG','PNG','AVI','MOV','MP4','MTS','WAV'):
@@ -217,12 +223,12 @@ def MED(SW):
                     if not os.path.exists(New_Location):
                         os.makedirs(New_Location, 777)
 
-                    To = New_Location + BASE+ '.' + EXT
+                    To = New_Location + BASE + EXT
 
                     I = 0;
                     while os.path.isfile(To):
                         I += 1
-                        To = New_Location + BASE + '_' + str(I).zfill(6) + '.' + EXT
+                        To = New_Location + BASE + '_' + str(I).zfill(6) + EXT
 
                     try:
                         shutil.move(From, To)

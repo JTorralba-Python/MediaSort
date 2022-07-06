@@ -8,8 +8,7 @@ import datetime
 def Extension(File):
     Input = os.path.splitext(File)
     Root = Input[0]
-    Extension = Input[1]
-    Extension = Extension.replace('.', '').upper()
+    Extension = Input[1].upper()
     return Extension
 
 def EXIFTool(File):
