@@ -191,8 +191,10 @@ def MED(SW):
 
                 if os.path.isfile(os.path.join(Path, File)):
                     From = Path + Slash + File
-                    EXT = File[-3:].upper()
-
+                    BASE = File[0:-4]
+                    EXT = File[-3:].lower()
+                    New_Location = Current_Location + Slash + '..' + Slash + EXT.upper() + Slash
+ 
                     if EXT.upper() in ('JPG','PNG','AVI','MOV','MP4','MTS','WAV'):
                         try:
                             DateTimeOriginal = EXIFTool(From)
@@ -203,28 +205,32 @@ def MED(SW):
                                 Time_HH = DateTimeOriginal[11:13]
                                 Time_MM = DateTimeOriginal[14:16]
                                 Time_SS = DateTimeOriginal[17:19]
-
-                                New_Location = Current_Location + Slash + '..' + Slash + EXT + Slash + Dimension(From) + Slash
-                                if not os.path.exists(New_Location):
-                                    os.makedirs(New_Location, 777);
-
-                                New_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
-                                To = New_Location + New_File + '.' + EXT
-
-                                I = 0;
-                                while os.path.isfile(To):
-                                    I += 1
-                                    New_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS + '_' + str(I).zfill(6)
-                                    To = New_Location + New_File + '.' + EXT
-
-                                shutil.move(From, To)
-                                SW.Queue_Add('MED: ' + File + ' --> ' + To)
-
+                                EXT = EXT.upper()
+                                BASE = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
+                                New_Location = New_Location + Dimension(From) + Slash
                             else:
-                                SW.Queue_Add('STS: ' + File + ' --> Unable to process.')
+                                SW.Queue_Add('STS: ' + File + ' --> Could not detect DateTimeOriginal.')
                         except:
                             print('MED(SW): ' + traceback.format_exc())
                             pass
+
+                    if not os.path.exists(New_Location):
+                        os.makedirs(New_Location, 777)
+
+                    To = New_Location + BASE+ '.' + EXT
+
+                    I = 0;
+                    while os.path.isfile(To):
+                        I += 1
+                        To = New_Location + BASE + '_' + str(I).zfill(6) + '.' + EXT
+
+                    try:
+                        shutil.move(From, To)
+                        SW.Queue_Add('MED: ' + File + ' --> ' + To)
+                    except:
+                        SW.Queue_Add('STS: ' + File + ' (Could not move file.)')
+                        print('MED(SW): ' + traceback.format_exc())
+                        pass
 
                 Sleep()
 
