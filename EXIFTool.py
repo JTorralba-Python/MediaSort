@@ -15,26 +15,49 @@ def File_Extension(File):
     Extension = File[1].replace('.','').upper()
     return Extension
 
-def EXIFTool(File):
-    try:
+def Dates(File):
+    Data = ''
+    if os.path.isfile(File):
+        CMD = 'EXIFTool\\EXIFTool -' + '*date*' + ' ' + '"' + File + '"'
+        CON = os.popen(CMD).read()
+        Data = CON
+    return Data
+
+def Tags(File):
+    Data = ''
+    if os.path.isfile(File):
+        Tags = ('datetimeoriginal', 'createdate', 'modifydate', 'contentcreatedate', 'creationdate', 'trackcreatedate', 'trackmodifydate', 'mediacreatedate', 'mediamodifydate', 'filemodifydate', 'filecreatedate', 'fileaccessdate')
+        for Tag in Tags:
+            CMD = 'EXIFTool\\EXIFTool -s -s -s -' + Tag + ' ' + '"' + File + '"'
+            CON = os.popen(CMD).read()
+            if CON:
+                Data = Data + Tag + ' ' + CON[:19] + '\r\n'
+    return Data
+
+def Type(File):
+    Data = ''
+    if os.path.isfile(File):
         Oldest = None
         Newest = None
 
-        CMD = 'EXIFTool\\EXIFTool -q -q -p EXIFTool\\' + File_Extension(File) + '.fmt ' + '"' + File + '"'
+        FMT = 'EXIFTool\\' + File_Extension(File) + '.fmt'
+        if not os.path.isfile(FMT):
+            if File_Extension(File) in ('AC3', 'PNG', 'WAV'):
+                return System(File)
+            else:
+                return Data
+
+        CMD = 'EXIFTool\\EXIFTool -q -q -p ' + FMT + ' "' + File + '"'
         #EXIFTool\EXIFTool -list
         #EXIFTool\EXIFTool -s -s -s -"datetimeoriginal" "Sample\Sample.jpg"
         #EXIFTool\EXIFTool -s -s -s -"*date*" "Sample\Sample.jpg"
         #EXIFTool\EXIFTool -q -q -p Format.fmt "Sample\Sample.jpg"
 
         #Output = os.popen('EXIFTool\\EXIFTool -q -q -p EXIFTool\\JPG.fmt ' + File).read()
-        Data = os.popen(CMD).read()
+        CON = os.popen(CMD).read()
 
-        if not Data:
-            CMD = 'EXIFTool\\EXIFTool -q -q -p EXIFTool\\' + 'System.fmt ' + '"' + File + '"'
-            Data = os.popen(CMD).read()
-
-        if Data:
-            EXIF = eval(Data)
+        if CON:
+            EXIF = eval(CON)
             ASC = tuple(sorted(EXIF))
             DSC = tuple(sorted(EXIF, reverse = True))
 
@@ -56,37 +79,25 @@ def EXIFTool(File):
                 else:
                     I = X
 
-            return Oldest[:19]
-
-    except:
-        print('EXIFTool(File): ' + traceback.format_exc())
-        return None
-
-def DeepScan(File):
-    Tags = ('datetimeoriginal', 'createdate', 'modifydate', 'contentcreatedate', 'creationdate', 'trackcreatedate', 'trackmodifydate', 'mediacreatedate', 'mediamodifydate', 'filemodifydate', 'filecreatedate', 'fileaccessdate')
-
-    for Tag in Tags:
-        CMD = 'EXIFTool\\EXIFTool -s -s -s -' + Tag + ' ' + '"' + File + '"'
-        Data = os.popen(CMD).read()
-        if Data:
-            print(Data[:19])
+            Data = Oldest[:19]
+    return Data
 
 def Dimension(File):
+    #imagesize
     #exifimagewidth, imagewidth, sourceimagewidth
     #exifimageheight, imageheight, sourceimageheight
-
-    CMD = 'EXIFTool\\EXIFTool -q -q -p ' + 'EXIFTool\Dimension.fmt' + ' ' + '"' + File + '"'
-    Dimension = os.popen(CMD).read()
-    if not Dimension:
-        Dimension = '0 x 0'
-
-    Dimension = Dimension.replace('\n', '')
-    Dimension = Dimension.replace('\r', '')
-
-    return Dimension
+    Data = ''
+    if os.path.isfile(File):
+        CMD = 'EXIFTool\\EXIFTool -s -s -s -' + 'imagesize' + ' ' + '"' + File + '"'
+        CON = os.popen(CMD).read()
+        Data = CON.replace('x', ' x ')
+        Data = Data.replace('\r','')
+        Data = Data.replace('\n','')
+    return Data
 
 def System(File):
-    try:
+    Data = ''
+    if os.path.isfile(File):
         CTime = datetime.datetime.fromtimestamp(pathlib.Path(File).stat().st_ctime)
         MTime = datetime.datetime.fromtimestamp(pathlib.Path(File).stat().st_mtime)
         ATime = datetime.datetime.fromtimestamp(pathlib.Path(File).stat().st_atime)
@@ -103,8 +114,5 @@ def System(File):
         if ATime < Time:
             Time = ATime
 
-        return Time.strftime('%Y:%m:%d %H:%M:%S')
-
-    except:
-        return 'N/A'
-
+        Data = Time.strftime('%Y:%m:%d %H:%M:%S')
+    return Data

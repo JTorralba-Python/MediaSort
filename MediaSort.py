@@ -137,7 +137,7 @@ class StopWatch(Frame):
     def GetLocation(self):
         Options = {}
         Options['initialdir'] = self.Location
-        Options['filetypes'] = [('JPG Files','.jpg'),('JPG Files','.JPG'),('PNG Files','.png'),('PNG Files','.PNG'),('AVI Files','.avi'),('AVI Files','.AVI'),('MOV Files','.mov'),('MOV Files','.MOV'),('MP4 Files','.mp4'),('MP4 Files','.MP4'),('MTS Files','.mts'),('MTS Files','.MTS'),('WAV Files','.wav'),('WAV Files','.WAV')]
+        #Options['filetypes'] = [('JPG Files','.jpg'),('JPG Files','.JPG'),('PNG Files','.png'),('PNG Files','.PNG'),('AVI Files','.avi'),('AVI Files','.AVI'),('MOV Files','.mov'),('MOV Files','.MOV'),('MP4 Files','.mp4'),('MP4 Files','.MP4'),('MTS Files','.mts'),('MTS Files','.MTS'),('WAV Files','.wav'),('WAV Files','.WAV')]
         Options['title'] = 'Open Media File'
         File = tkinter.filedialog.askopenfilename(**Options)
         if File:
@@ -195,25 +195,17 @@ def MED(SW):
                     BASE = File_Base(File)
                     EXT = File_Extension(File)
 
-                    New_Location = Current_Location + Slash + '..' + Slash + EXT + Slash
+                    New_Location = Current_Location + Slash + '..' + Slash + EXT + Slash + Dimension(From) + Slash
  
-                    if EXT.upper() in ('JPG','PNG','AVI','MOV','MP4','MTS','WAV'):
-                        try:
-                            DateTimeOriginal = EXIFTool(From)
-                            if DateTimeOriginal != None:
-                                Date_YYYY = DateTimeOriginal[0:4]
-                                Date_MM = DateTimeOriginal[5:7]
-                                Date_DD = DateTimeOriginal[8:10]
-                                Time_HH = DateTimeOriginal[11:13]
-                                Time_MM = DateTimeOriginal[14:16]
-                                Time_SS = DateTimeOriginal[17:19]
-                                BASE = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
-                                New_Location = New_Location + Dimension(From) + Slash
-                            else:
-                                SW.Queue_Add('STS: ' + File + ' --> Could not detect DateTimeOriginal.')
-                        except:
-                            print('MED(SW): ' + traceback.format_exc())
-                            pass
+                    DateTimeOriginal = Type(From)
+                    if DateTimeOriginal != '':
+                        Date_YYYY = DateTimeOriginal[0:4]
+                        Date_MM = DateTimeOriginal[5:7]
+                        Date_DD = DateTimeOriginal[8:10]
+                        Time_HH = DateTimeOriginal[11:13]
+                        Time_MM = DateTimeOriginal[14:16]
+                        Time_SS = DateTimeOriginal[17:19]
+                        BASE = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
 
                     if not os.path.exists(New_Location):
                         os.makedirs(New_Location, 777)
