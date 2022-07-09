@@ -42,7 +42,7 @@ def Type(File):
 
         FMT = 'EXIFTool\\' + File_Extension(File) + '.fmt'
         if not os.path.isfile(FMT):
-            if File_Extension(File) in ('AC3', 'PNG', 'WAV'):
+            if File_Extension(File) in ('7Z', 'AC3', 'BMP', 'MPEG', 'PNG', 'WAV'):
                 return System(File)
             else:
                 return Data
@@ -87,12 +87,14 @@ def Dimension(File):
     #exifimagewidth, imagewidth, sourceimagewidth
     #exifimageheight, imageheight, sourceimageheight
     Data = ''
+    return Data
     if os.path.isfile(File):
         CMD = 'EXIFTool\\EXIFTool -s -s -s -' + 'imagesize' + ' ' + '"' + File + '"'
         CON = os.popen(CMD).read()
         Data = CON.replace('x', ' x ')
         Data = Data.replace('\r','')
         Data = Data.replace('\n','')
+        Data = Data.replace('0 x 0', '')
     return Data
 
 def System(File):
