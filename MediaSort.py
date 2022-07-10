@@ -208,7 +208,10 @@ def MED(SW):
                         BASE = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
 
                     if not os.path.exists(New_Location):
-                        os.makedirs(New_Location, 777)
+                        try:
+                            os.makedirs(New_Location, 777)
+                        except:
+                            print('MED(SW): ' + traceback.format_exc())
 
                     To = New_Location + BASE + '.' + EXT.lower()
 

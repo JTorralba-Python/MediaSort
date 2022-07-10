@@ -98,6 +98,8 @@ def Make(File):
         Data = CON.upper()
         Data = Data.replace('\r','')
         Data = Data.replace('\n','')
+        Data = Data.replace(':',' ')
+        Data = Data.replace('/',' ')
     return Data
 
 def Model(File):
@@ -108,6 +110,8 @@ def Model(File):
         Data = CON.upper()
         Data = Data.replace('\r','')
         Data = Data.replace('\n','')
+        Data = Data.replace(':',' ')
+        Data = Data.replace('/',' ')
     return Data
 
 def Dimension(File):
