@@ -15,6 +15,14 @@ def File_Extension(File):
     Extension = File[1].replace('.','').upper()
     return Extension
 
+def EXIF(File):
+    Data = ''
+    if os.path.isfile(File):
+        CMD = 'EXIFTool\\EXIFTool' + ' ' + '"' + File + '"'
+        CON = os.popen(CMD).read()
+        Data = CON
+    return Data
+
 def Dates(File):
     Data = ''
     if os.path.isfile(File):
@@ -42,7 +50,7 @@ def Type(File):
 
         FMT = 'EXIFTool\\' + File_Extension(File) + '.fmt'
         if not os.path.isfile(FMT):
-            if File_Extension(File) in ('7Z', 'AC3', 'BMP', 'MPEG', 'PNG', 'WAV'):
+            if File_Extension(File) in ('7Z', 'AI', 'AIFF', 'AC3', 'AU', 'BMP', 'DOC', 'DOCX', 'M2V', 'MP3', 'MPEG', 'PNG', 'WAV'):
                 return System(File)
             else:
                 return Data
@@ -82,12 +90,31 @@ def Type(File):
             Data = Oldest[:19]
     return Data
 
+def Make(File):
+    Data = ''
+    if os.path.isfile(File):
+        CMD = 'EXIFTool\\EXIFTool -s -s -s -' + 'make' + ' ' + '"' + File + '"'
+        CON = os.popen(CMD).read()
+        Data = CON.upper()
+        Data = Data.replace('\r','')
+        Data = Data.replace('\n','')
+    return Data
+
+def Model(File):
+    Data = ''
+    if os.path.isfile(File):
+        CMD = 'EXIFTool\\EXIFTool -s -s -s -' + 'model' + ' ' + '"' + File + '"'
+        CON = os.popen(CMD).read()
+        Data = CON.upper()
+        Data = Data.replace('\r','')
+        Data = Data.replace('\n','')
+    return Data
+
 def Dimension(File):
     #imagesize
     #exifimagewidth, imagewidth, sourceimagewidth
     #exifimageheight, imageheight, sourceimageheight
     Data = ''
-    return Data
     if os.path.isfile(File):
         CMD = 'EXIFTool\\EXIFTool -s -s -s -' + 'imagesize' + ' ' + '"' + File + '"'
         CON = os.popen(CMD).read()

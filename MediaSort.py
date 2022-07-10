@@ -195,7 +195,7 @@ def MED(SW):
                     BASE = File_Base(File)
                     EXT = File_Extension(File)
 
-                    New_Location = Current_Location + Slash + '..' + Slash + EXT + Slash + Dimension(From) + Slash
+                    New_Location = Current_Location + Slash + '..' + Slash + EXT + Slash + Make(From) + Slash + Model(From) + Slash + Dimension(From) + Slash
  
                     DateTimeOriginal = Type(From)
                     if DateTimeOriginal != '':
