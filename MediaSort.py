@@ -195,7 +195,10 @@ def MED(SW):
                     BASE = File_Base(File)
                     EXT = File_Extension(File)
 
-                    New_Location = Current_Location + Slash + '..' + Slash + EXT + Slash + Make(From) + Slash + Model(From) + Slash + Dimension(From) + Slash
+                    if Tree.get() == 1:
+                        New_Location = Current_Location + Slash + '..' + Slash + EXT + Slash + Make(From) + Slash + Model(From) + Slash + Dimension(From) + Slash
+                    else:
+                        New_Location = Current_Location + Slash + '..' + Slash + EXT + Slash
  
                     DateTimeOriginal = Type(From)
                     if DateTimeOriginal != '':
@@ -242,6 +245,9 @@ def MED(SW):
 def LOC_Action(SW):
     SW.GetLocation()
 
+def T_Action():
+    print(Tree.get())
+
 def main():
     root = Tk()
     root.title('MediaSort')
@@ -253,18 +259,25 @@ def main():
         Slash = '\\'
     else:
         Slash = '/'
+  
+    global Tree
+    Tree = IntVar()
+    Tree.set(0)
 
     SW = StopWatch(root)
     SW.pack(side=TOP, expand=TRUE, fill=BOTH)
 
     PadX = 10
 
+    LOC_Button = Button(root, text='LOC', padx=PadX*2, command=lambda:LOC_Action(SW))
+    LOC_Button.pack(side=LEFT)
+
     global MED_Button
     MED_Button = Button(root, text='MED', padx=PadX*2, command=lambda:Worker(SW,'MED'))
     MED_Button.pack(side=LEFT)
 
-    LOC_Button = Button(root, text='LOC', padx=PadX*2, command=lambda:LOC_Action(SW))
-    LOC_Button.pack(side=LEFT)
+    Tree_CheckButton = Checkbutton(root, text='Tree', variable=Tree, onvalue=1, offvalue=0, padx=PadX)
+    Tree_CheckButton.pack(side=LEFT)
 
     Q_Button = Button(root, text='Q', padx=PadX, command=root.destroy)
     Q_Button.pack(side=RIGHT)
