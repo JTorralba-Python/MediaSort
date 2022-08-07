@@ -116,19 +116,16 @@ def Process():
 
             if not os.path.exists(Target_Path):
                 try:
-                    print('Target_Path = ' , Target_Path)
                     os.makedirs(Target_Path, 777)
                 except:
                     print(traceback.format_exc())
 
             try:
-                print('Source = ', Source)
-                print('Target = ', Target)
                 shutil.move(Source, Target)
             except:
                 print(traceback.format_exc())
 
-            #print(Target_Path + Slash + Target_File)
+            print(Target_Path + Slash + Target_File)
 
         try:
             if len(os.listdir(Path)) == 0:
