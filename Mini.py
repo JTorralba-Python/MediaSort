@@ -52,7 +52,7 @@ def Destination(File):
             Key = Record[:32].strip()
             Value = Record[34:].strip()
 
-            if 'DATE' in Key and 'EXTENSION' not in Key:
+            if 'DATE' in Key and 'EXTENSION' not in Key and 'PROFILE' not in Key:
                 Date = Value[:19]
 
                 Filter = Date
