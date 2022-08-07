@@ -104,9 +104,9 @@ def Destination(File):
 
 def Process():
 
-    for Path, Folders, Files in os.walk(Location, topdown=False):
+    for Path, Folders, Files in os.walk(Location, topdown = False):
 
-        for File in sorted(Files, reverse=True):
+        for File in sorted(Files, reverse = True):
 
             Source = Path + Slash + File
 
