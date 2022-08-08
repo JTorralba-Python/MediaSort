@@ -62,20 +62,21 @@ def Destination(File):
                 if Date != '0000:00:00 00:00:00' and Filter.isnumeric() and len(Filter) == 14:
                     DateList.append(Date)
             else:
-                if Key == 'MAKE':
-                    Make = Value.replace(':', ' ').replace('/', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
-                    if Make != '':
-                        Target_Path = Target_Path + Slash + Make
-                else:
-                    if Key == 'MODEL':
-                        Model = Value.replace(':', ' ').replace('/', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
-                        if Model != '':
-                            Target_Path = Target_Path + Slash + Model
+                if Option != 'ROOT':
+                    if Key == 'MAKE':
+                        Make = Value.replace(':', ' ').replace('/', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
+                        if Make != '':
+                            Target_Path = Target_Path + Slash + Make
                     else:
-                        if Key == 'IMAGESIZE':
-                            Dimension = Value.replace('X', ' x ')
-                            if Dimension != '':
-                                Target_Path = Target_Path + Slash + Dimension
+                        if Key == 'MODEL':
+                            Model = Value.replace(':', ' ').replace('/', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
+                            if Model != '':
+                                Target_Path = Target_Path + Slash + Model
+                        else:
+                            if Key == 'IMAGESIZE':
+                                Dimension = Value.replace('X', ' x ')
+                                if Dimension != '':
+                                    Target_Path = Target_Path + Slash + Dimension
 
         DateList.sort()
 
@@ -141,9 +142,15 @@ if __name__ == '__main__':
 
     global Location
     try:
-        Location = sys.argv[1]
+        Location = sys.argv[1].upper()
     except:
         Location = None
+
+    global Option
+    try:
+        Option = sys.argv[2].upper()
+    except:
+        Option = None
 
     Clear()
 
