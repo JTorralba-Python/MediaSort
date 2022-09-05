@@ -1,3 +1,4 @@
+import getopt
 import os
 import shutil
 import sys
@@ -33,10 +34,10 @@ def Destination(File):
         Date = ''
 
         String = os.path.splitext(File)
-        Extension = String[1].replace('.','').upper()
+        Extension = String[1].replace('.','')
 
         if Extension != '':
-            Target_Path = Target_Path + Slash + Extension
+            Target_Path = Target_Path + Slash + Extension.upper()
 
         CMD = 'EXIFTool\\EXIFTool -s' + ' ' + '-*date* -make -model -imagesize' + ' ' + '"' + File + '"'
         CON = os.popen(CMD).read().upper()
@@ -62,7 +63,7 @@ def Destination(File):
                 if Date != '0000:00:00 00:00:00' and Filter.isnumeric() and len(Filter) == 14:
                     DateList.append(Date)
             else:
-                if Option != 'ROOT':
+                if Tree:
                     if Key == 'MAKE':
                         Make = Value.replace(':', ' ').replace('/', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
                         if Make != '':
@@ -78,21 +79,24 @@ def Destination(File):
                                 if Dimension != '':
                                     Target_Path = Target_Path + Slash + Dimension
 
-        DateList.sort()
+        if Name:
+            DateList.sort()
 
-        Date = DateList[0]
-        
-        if Date != '':
+            Date = DateList[0]
 
-            Date_YYYY = Date[0:4]
-            Date_MM = Date[5:7]
-            Date_DD = Date[8:10]
+            if Date != '':
 
-            Time_HH = Date[11:13]
-            Time_MM = Date[14:16]
-            Time_SS = Date[17:19]
+                Date_YYYY = Date[0:4]
+                Date_MM = Date[5:7]
+                Date_DD = Date[8:10]
 
-            Target_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
+                Time_HH = Date[11:13]
+                Time_MM = Date[14:16]
+                Time_SS = Date[17:19]
+
+                Target_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
+        else:
+            Target_File = os.path.basename(File).replace('.' + Extension,'')
 
         Unique_File = Target_File
         I = 0
@@ -140,21 +144,31 @@ def Main():
 
 if __name__ == '__main__':
 
-    global Location
-    try:
-        Location = sys.argv[1].upper()
-    except:
-        Location = None
-
-    global Option
-    try:
-        Option = sys.argv[2].upper()
-    except:
-        Option = None
 
     Clear()
 
     Global()
+
+    global Location
+    Location = None
+
+    global Tree
+    Tree = False
+
+    global Name
+    Name = False
+
+    try:
+        Options, Arguments = getopt.getopt(sys.argv[1:], 'tnTN', ['path=', 'PATH='])
+        for Key, Value in Options:
+            if Key in ['--path', '--PATH']:
+                Location = Value
+            elif Key in ['-t', '-T']:
+                Tree = True
+            elif Key in ['-n', '-N']:
+                Name = True
+    except:
+        pass
 
     if Location != None and os.path.exists(Location):
         Main()
