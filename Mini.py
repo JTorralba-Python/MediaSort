@@ -31,6 +31,9 @@ def Destination(File):
         Make = ''
         Model = ''
         Dimension = ''
+        Artist = ''
+        Album = ''
+        Title = ''
         Date = ''
 
         String = os.path.splitext(File)
@@ -39,7 +42,7 @@ def Destination(File):
         if Extension != '':
             Target_Path = Target_Path + Slash + Extension.upper()
 
-        CMD = 'EXIFTool\\EXIFTool -s' + ' ' + '-*date* -make -model -imagesize' + ' ' + '"' + File + '"'
+        CMD = 'EXIFTool\\EXIFTool -s' + ' ' + '-*date* -make -model -imagesize -artist -album -title' + ' ' + '"' + File + '"'
         CON = os.popen(CMD).read().upper()
 
         Data = CON
@@ -63,23 +66,39 @@ def Destination(File):
                 if Date != '0000:00:00 00:00:00' and Filter.isnumeric() and len(Filter) == 14:
                     DateList.append(Date)
             else:
-                if Tree:
-                    if Key == 'MAKE':
-                        Make = Value.replace(':', ' ').replace('/', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
-                        if Make != '':
-                            Target_Path = Target_Path + Slash + Make
-                    else:
-                        if Key == 'MODEL':
-                            Model = Value.replace(':', ' ').replace('/', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
-                            if Model != '':
-                                Target_Path = Target_Path + Slash + Model
-                        else:
-                            if Key == 'IMAGESIZE':
-                                Dimension = Value.replace('X', ' x ')
-                                if Dimension != '':
-                                    Target_Path = Target_Path + Slash + Dimension
 
-        if Name:
+                if Key == 'TITLE':
+                    Title = Value.replace(':', ' ').replace('/', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
+                    if Title != '':
+                        Target_File = Title
+                else:
+                    if Tree:
+                        if Key == 'MAKE':
+                            Make = Value.replace(':', ' ').replace('/', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
+                            if Make != '':
+                                Target_Path = Target_Path + Slash + Make
+                        else:
+                            if Key == 'MODEL':
+                                Model = Value.replace(':', ' ').replace('/', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
+                                if Model != '':
+                                    Target_Path = Target_Path + Slash + Model
+                            else:
+                                if Key == 'IMAGESIZE':
+                                    Dimension = Value.replace('X', ' x ')
+                                    if Dimension != '':
+                                        Target_Path = Target_Path + Slash + Dimension
+                                else:
+                                    if Key == 'ARTIST':
+                                        Artist = Value.replace(':', ' ').replace('/', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
+                                        if Artist != '':
+                                            Target_Path = Target_Path + Slash + Artist
+                                    else:
+                                        if Key == 'ALBUM':
+                                            Album = Value.replace(':', ' ').replace('/', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
+                                            if Album != '':
+                                                Target_Path = Target_Path + Slash + Album
+
+        if Name and Title == '':
             DateList.sort()
 
             Date = DateList[0]
@@ -96,7 +115,8 @@ def Destination(File):
 
                 Target_File = Date_YYYY + '-' + Date_MM + '-' + Date_DD + '_' + Time_HH + Time_MM + Time_SS
         else:
-            Target_File = os.path.basename(File).replace('.' + Extension,'')
+            if Title == '':
+                Target_File = os.path.basename(File).replace('.' + Extension,'')
 
         Unique_File = Target_File
         I = 0

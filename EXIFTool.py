@@ -128,6 +128,42 @@ def Dimension(File):
         Data = Data.replace('0 x 0', '')
     return Data
 
+def Artist(File):
+    Data = ''
+    if os.path.isfile(File):
+        CMD = 'EXIFTool\\EXIFTool -s -s -s -' + 'artist' + ' ' + '"' + File + '"'
+        CON = os.popen(CMD).read()
+        Data = CON.upper()
+        Data = Data.replace('\r','')
+        Data = Data.replace('\n','')
+        Data = Data.replace(':',' ')
+        Data = Data.replace('/',' ')
+    return Data
+
+def Album(File):
+    Data = ''
+    if os.path.isfile(File):
+        CMD = 'EXIFTool\\EXIFTool -s -s -s -' + 'album' + ' ' + '"' + File + '"'
+        CON = os.popen(CMD).read()
+        Data = CON.upper()
+        Data = Data.replace('\r','')
+        Data = Data.replace('\n','')
+        Data = Data.replace(':',' ')
+        Data = Data.replace('/',' ')
+    return Data
+
+def Title(File):
+    Data = ''
+    if os.path.isfile(File):
+        CMD = 'EXIFTool\\EXIFTool -s -s -s -' + 'Title' + ' ' + '"' + File + '"'
+        CON = os.popen(CMD).read()
+        Data = CON.upper()
+        Data = Data.replace('\r','')
+        Data = Data.replace('\n','')
+        Data = Data.replace(':',' ')
+        Data = Data.replace('/',' ')
+    return Data
+
 def System(File):
     Data = ''
     if os.path.isfile(File):
