@@ -68,18 +68,18 @@ def Destination(File):
             else:
 
                 if Key == 'TITLE':
-                    Title = Value.replace(':', ' ').replace('/', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
+                    Title = Value.replace(':', ' ').replace('/', ' ').replace('?', ' ').replace('<', ' ').replace('>', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
                     if Title != '':
                         Target_File = Title
                 else:
                     if Tree:
                         if Key == 'MAKE':
-                            Make = Value.replace(':', ' ').replace('/', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
+                            Make = Value.replace(':', ' ').replace('/', ' ').replace('?', ' ').replace('<', ' ').replace('>', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
                             if Make != '':
                                 Target_Path = Target_Path + Slash + Make
                         else:
                             if Key == 'MODEL':
-                                Model = Value.replace(':', ' ').replace('/', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
+                                Model = Value.replace(':', ' ').replace('/', ' ').replace('?', ' ').replace('<', ' ').replace('>', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
                                 if Model != '':
                                     Target_Path = Target_Path + Slash + Model
                             else:
@@ -89,12 +89,12 @@ def Destination(File):
                                         Target_Path = Target_Path + Slash + Dimension
                                 else:
                                     if Key == 'ARTIST':
-                                        Artist = Value.replace(':', ' ').replace('/', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
+                                        Artist = Value.replace(':', ' ').replace('/', ' ').replace('?', ' ').replace('<', ' ').replace('>', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
                                         if Artist != '':
                                             Target_Path = Target_Path + Slash + Artist
                                     else:
                                         if Key == 'ALBUM':
-                                            Album = Value.replace(':', ' ').replace('/', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
+                                            Album = Value.replace(':', ' ').replace('/', ' ').replace('?', ' ').replace('<', ' ').replace('>', ' ').replace('.', ' ').replace(',', ' ').replace('  ', ' ').strip()
                                             if Album != '':
                                                 Target_Path = Target_Path + Slash + Album
 

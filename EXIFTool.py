@@ -100,6 +100,9 @@ def Make(File):
         Data = Data.replace('\n','')
         Data = Data.replace(':',' ')
         Data = Data.replace('/',' ')
+        Data = Data.replace('?',' ')
+        Data = Data.replace('<',' ')
+        Data = Data.replace('>',' ')
     return Data
 
 def Model(File):
@@ -112,6 +115,9 @@ def Model(File):
         Data = Data.replace('\n','')
         Data = Data.replace(':',' ')
         Data = Data.replace('/',' ')
+        Data = Data.replace('?',' ')
+        Data = Data.replace('<',' ')
+        Data = Data.replace('>',' ')
     return Data
 
 def Dimension(File):
@@ -138,6 +144,9 @@ def Artist(File):
         Data = Data.replace('\n','')
         Data = Data.replace(':',' ')
         Data = Data.replace('/',' ')
+        Data = Data.replace('?',' ')
+        Data = Data.replace('<',' ')
+        Data = Data.replace('>',' ')
     return Data
 
 def Album(File):
@@ -150,6 +159,9 @@ def Album(File):
         Data = Data.replace('\n','')
         Data = Data.replace(':',' ')
         Data = Data.replace('/',' ')
+        Data = Data.replace('?',' ')
+        Data = Data.replace('<',' ')
+        Data = Data.replace('>',' ')
     return Data
 
 def Title(File):
@@ -162,6 +174,9 @@ def Title(File):
         Data = Data.replace('\n','')
         Data = Data.replace(':',' ')
         Data = Data.replace('/',' ')
+        Data = Data.replace('?',' ')
+        Data = Data.replace('<',' ')
+        Data = Data.replace('>',' ')
     return Data
 
 def System(File):
