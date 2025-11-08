@@ -26,7 +26,7 @@ def EXIF(File):
 def Dates(File):
     Data = ''
     if os.path.isfile(File):
-        CMD = 'EXIFTool\\EXIFTool -' + '*date*' + ' ' + '"' + File + '"'
+        CMD = 'exiftool -' + '*date*' + ' ' + '"' + File + '"'
         CON = os.popen(CMD).read()
         Data = CON
     return Data
@@ -36,7 +36,7 @@ def Tags(File):
     if os.path.isfile(File):
         Tags = ('datetimeoriginal', 'createdate', 'modifydate', 'contentcreatedate', 'creationdate', 'trackcreatedate', 'trackmodifydate', 'mediacreatedate', 'mediamodifydate', 'filemodifydate', 'filecreatedate', 'fileaccessdate')
         for Tag in Tags:
-            CMD = 'EXIFTool\\EXIFTool -s -s -s -' + Tag + ' ' + '"' + File + '"'
+            CMD = 'exiftool -s -s -s -' + Tag + ' ' + '"' + File + '"'
             CON = os.popen(CMD).read()
             if CON:
                 Data = Data + Tag + ' ' + CON[:19] + '\r\n'
@@ -55,13 +55,13 @@ def Type(File):
             else:
                 return Data
 
-        CMD = 'EXIFTool\\EXIFTool -q -q -p ' + FMT + ' "' + File + '"'
+        CMD = 'exiftool -q -q -p ' + FMT + ' "' + File + '"'
         #EXIFTool\EXIFTool -list
         #EXIFTool\EXIFTool -s -s -s -"datetimeoriginal" "Sample\Sample.jpg"
         #EXIFTool\EXIFTool -s -s -s -"*date*" "Sample\Sample.jpg"
         #EXIFTool\EXIFTool -q -q -p Format.fmt "Sample\Sample.jpg"
 
-        #Output = os.popen('EXIFTool\\EXIFTool -q -q -p EXIFTool\\JPG.fmt ' + File).read()
+        #Output = os.popen('exiftool -q -q -p EXIFTool\\JPG.fmt ' + File).read()
         CON = os.popen(CMD).read()
 
         if CON:
@@ -93,7 +93,7 @@ def Type(File):
 def Make(File):
     Data = ''
     if os.path.isfile(File):
-        CMD = 'EXIFTool\\EXIFTool -s -s -s -' + 'make' + ' ' + '"' + File + '"'
+        CMD = 'exiftool -s -s -s -' + 'make' + ' ' + '"' + File + '"'
         CON = os.popen(CMD).read()
         Data = CON.upper()
         Data = Data.replace('\r','')
@@ -108,7 +108,7 @@ def Make(File):
 def Model(File):
     Data = ''
     if os.path.isfile(File):
-        CMD = 'EXIFTool\\EXIFTool -s -s -s -' + 'model' + ' ' + '"' + File + '"'
+        CMD = 'exiftool -s -s -s -' + 'model' + ' ' + '"' + File + '"'
         CON = os.popen(CMD).read()
         Data = CON.upper()
         Data = Data.replace('\r','')
@@ -126,7 +126,7 @@ def Dimension(File):
     #exifimageheight, imageheight, sourceimageheight
     Data = ''
     if os.path.isfile(File):
-        CMD = 'EXIFTool\\EXIFTool -s -s -s -' + 'imagesize' + ' ' + '"' + File + '"'
+        CMD = 'exiftool -s -s -s -' + 'imagesize' + ' ' + '"' + File + '"'
         CON = os.popen(CMD).read()
         Data = CON.replace('x', ' x ')
         Data = Data.replace('\r','')
@@ -137,7 +137,7 @@ def Dimension(File):
 def Artist(File):
     Data = ''
     if os.path.isfile(File):
-        CMD = 'EXIFTool\\EXIFTool -s -s -s -' + 'artist' + ' ' + '"' + File + '"'
+        CMD = 'exiftool -s -s -s -' + 'artist' + ' ' + '"' + File + '"'
         CON = os.popen(CMD).read()
         Data = CON.upper()
         Data = Data.replace('\r','')
@@ -152,7 +152,7 @@ def Artist(File):
 def Album(File):
     Data = ''
     if os.path.isfile(File):
-        CMD = 'EXIFTool\\EXIFTool -s -s -s -' + 'album' + ' ' + '"' + File + '"'
+        CMD = 'exiftool -s -s -s -' + 'album' + ' ' + '"' + File + '"'
         CON = os.popen(CMD).read()
         Data = CON.upper()
         Data = Data.replace('\r','')
@@ -167,7 +167,7 @@ def Album(File):
 def Title(File):
     Data = ''
     if os.path.isfile(File):
-        CMD = 'EXIFTool\\EXIFTool -s -s -s -' + 'Title' + ' ' + '"' + File + '"'
+        CMD = 'exiftool -s -s -s -' + 'Title' + ' ' + '"' + File + '"'
         CON = os.popen(CMD).read()
         Data = CON.upper()
         Data = Data.replace('\r','')

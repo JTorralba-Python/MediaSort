@@ -224,6 +224,7 @@ def MED(SW):
                         To = New_Location + BASE + '_' + str(I).zfill(6) + '.' + EXT.lower()
 
                     try:
+                        os.chmod(os.path.dirname(To), 0o755)
                         shutil.move(From, To)
                         SW.Queue_Add('MED: ' + File + ' --> ' + To)
                     except:
